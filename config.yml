@@ -2,3 +2,16 @@ logging:
   level: INFO
   loggers:
     com.fahdisa: DEBUG
+
+database:
+  url: ${DATABASE_URL}
+  name: ${DATABASE_NAME}
+
+swagger:
+  title: Shopping Cart Service
+  resourcePackage: com.fahdisa.scs.resources
+  version: 1.0.0
+  description: A platform to order your products
+  termsOfServiceUrl:
+  contact: Isau Opeyemi AZEEZ
+  contactEmail: prodigy4442@gmail.com

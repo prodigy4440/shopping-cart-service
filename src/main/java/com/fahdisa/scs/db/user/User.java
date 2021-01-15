@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.Objects;
 
@@ -13,14 +14,17 @@ public class User {
     @JsonSerialize(using = ObjectIdJsonSerializer.class)
     private ObjectId id;
 
+    @NotEmpty(message = "Email is required")
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotEmpty(message = "Password is required")
     private String password;
 
     private String role;
 
     private Date createdAt;
+
     private Date updatedAt;
 
     public User() {

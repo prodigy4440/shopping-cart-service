@@ -10,17 +10,13 @@ import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class UserStore {
 
     private final String collectionName = "user";
     private final MongoCollection<User> collection;
-
-    private Set<User> users = new HashSet<>();
 
     public UserStore(String database, MongoClient mongoClient) {
         this.collection = mongoClient.getDatabase(database).getCollection(collectionName, User.class);

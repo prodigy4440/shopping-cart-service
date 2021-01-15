@@ -26,8 +26,17 @@ public class UserService {
             user.setRole("NORMAL");
         }
 
+        Optional<User> optional = userStore.findByEmail(user.getEmail());
+
+        if(optional.isPresent()){
+            return new ApiResponse.Builder<User>()
+                    .status(Status.FAILED)
+                    .description("User already exist")
+                    .build();
+        }
         String pwHash = BCrypt.withDefaults().hashToString(12, user.getPassword().toCharArray());
         user.setPassword(pwHash);
+        user.setId(null);
         userStore.save(user);
         return new ApiResponse.Builder<User>()
                 .status(Status.SUCCESS)
@@ -55,6 +64,21 @@ public class UserService {
                 .status(Status.SUCCESS)
                 .description("Success")
                 .data(user)
+                .build();
+    }
+
+    public ApiResponse<User> find(String id) {
+        Optional<User> optional = userStore.findById(id);
+        if (!optional.isPresent()) {
+            return new ApiResponse.Builder<User>()
+                    .status(Status.FAILED)
+                    .description("User not found")
+                    .build();
+        }
+        return new ApiResponse.Builder<User>()
+                .status(Status.SUCCESS)
+                .description("Success")
+                .data(optional.get())
                 .build();
     }
 

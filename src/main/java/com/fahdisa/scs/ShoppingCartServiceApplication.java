@@ -1,5 +1,10 @@
 package com.fahdisa.scs;
 
+import com.fahdisa.scs.config.MongoClientFactory;
+import com.fahdisa.scs.core.UserService;
+import com.fahdisa.scs.db.user.UserStore;
+import com.fahdisa.scs.health.DatabaseHealthCheck;
+import com.fahdisa.scs.resources.UserResource;
 import com.mongodb.client.MongoClient;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -38,8 +43,14 @@ public class ShoppingCartServiceApplication extends Application<ShoppingCartServ
     @Override
     public void run(final ShoppingCartServiceConfiguration configuration,
                     final Environment environment) {
-        MongoClient mongoClient = configuration.getMongoDatabaseClientFactory().build(environment);
+        MongoClientFactory mongoFactory = configuration.getMongoDatabaseClientFactory();
+        MongoClient mongoClient = mongoFactory.build(environment);
 
+        UserResource userResource = new UserResource(new UserService(
+                new UserStore(mongoFactory.getName(), mongoClient)));
+        environment.jersey().register(userResource);
+        environment.healthChecks().register("database",
+                new DatabaseHealthCheck(mongoFactory.getName(), mongoClient));
     }
 
 }

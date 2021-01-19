@@ -1,8 +1,10 @@
 package com.fahdisa.scs.db.product;
 
 import com.fahdisa.scs.db.util.ObjectIdJsonSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bson.types.ObjectId;
+import org.mongojack.Id;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -11,8 +13,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
 
+    @Id
+    @org.mongojack.ObjectId
     @JsonSerialize(using = ObjectIdJsonSerializer.class)
     private ObjectId id;
 
@@ -21,6 +26,9 @@ public class Product {
 
     @NotEmpty(message = "Description is required")
     private String description;
+
+    @NotEmpty(message = "Image url is required")
+    private String url;
 
     @Min(value = 0, message = "Invalid quantity")
     @NotNull(message = "Quantity is required")
@@ -60,6 +68,14 @@ public class Product {
         this.description = description;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
@@ -97,18 +113,12 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) &&
-                Objects.equals(name, product.name) &&
-                Objects.equals(description, product.description) &&
-                Objects.equals(quantity, product.quantity) &&
-                Objects.equals(price, product.price) &&
-                Objects.equals(createdAt, product.createdAt) &&
-                Objects.equals(updatedAt, product.updatedAt);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(url, product.url) && Objects.equals(quantity, product.quantity) && Objects.equals(price, product.price) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, quantity, price, createdAt, updatedAt);
+        return Objects.hash(id, name, description, url, quantity, price, createdAt, updatedAt);
     }
 
     @Override
@@ -117,6 +127,7 @@ public class Product {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", createdAt=" + createdAt +

@@ -4,6 +4,7 @@ import com.fahdisa.scs.db.util.ObjectIdJsonSerializer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bson.types.ObjectId;
+import org.mongojack.Id;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.Objects;
 
 public class User {
 
+    @Id
+    @org.mongojack.ObjectId
     @JsonSerialize(using = ObjectIdJsonSerializer.class)
     private ObjectId id;
 

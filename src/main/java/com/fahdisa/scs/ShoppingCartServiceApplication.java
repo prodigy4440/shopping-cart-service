@@ -1,11 +1,14 @@
 package com.fahdisa.scs;
 
 import com.fahdisa.scs.config.MongoClientFactory;
+import com.fahdisa.scs.core.OrderService;
 import com.fahdisa.scs.core.ProductService;
 import com.fahdisa.scs.core.UserService;
+import com.fahdisa.scs.db.order.OrderStore;
 import com.fahdisa.scs.db.product.ProductStore;
 import com.fahdisa.scs.db.user.UserStore;
 import com.fahdisa.scs.health.DatabaseHealthCheck;
+import com.fahdisa.scs.resources.OrderResource;
 import com.fahdisa.scs.resources.ProductResource;
 import com.fahdisa.scs.resources.UserResource;
 import com.mongodb.client.MongoClient;
@@ -51,15 +54,21 @@ public class ShoppingCartServiceApplication extends Application<ShoppingCartServ
         MongoClientFactory mongoFactory = configuration.getMongoDatabaseClientFactory();
         MongoClient mongoClient = mongoFactory.build(environment);
 
+        //Create Service
+        UserService userService = new UserService(new UserStore(mongoFactory.getName(), mongoClient));
+        ProductService productService = new ProductService(new ProductStore(mongoFactory.getName(), mongoClient));
+        OrderService orderService = new OrderService(new OrderStore(mongoFactory.getName(), mongoClient), productService);
+
+
         //Create Resource
-        UserResource userResource = new UserResource(new UserService(
-                new UserStore(mongoFactory.getName(), mongoClient)));
-        ProductResource productResource = new ProductResource(new ProductService(
-                new ProductStore(mongoFactory.getName(), mongoClient)));
+        UserResource userResource = new UserResource(userService);
+        ProductResource productResource = new ProductResource(productService);
+        OrderResource orderResource = new OrderResource(orderService);
 
         //Register resource
         environment.jersey().register(userResource);
         environment.jersey().register(productResource);
+        environment.jersey().register(orderResource);
 
         //Register HealthCheck
         environment.healthChecks().register("database",

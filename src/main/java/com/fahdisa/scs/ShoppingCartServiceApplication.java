@@ -1,5 +1,11 @@
 package com.fahdisa.scs;
 
+import com.fahdisa.scs.auth.JWTAuthenticator;
+import com.fahdisa.scs.auth.JWTCredentialAuthFilter;
+import com.fahdisa.scs.auth.JWTDefaultAuthenticator;
+import com.fahdisa.scs.auth.JwtCredential;
+import com.fahdisa.scs.auth.UserAuthorizer;
+import com.fahdisa.scs.auth.UserPrinciple;
 import com.fahdisa.scs.config.MongoClientFactory;
 import com.fahdisa.scs.core.OrderService;
 import com.fahdisa.scs.core.ProductService;
@@ -13,12 +19,18 @@ import com.fahdisa.scs.resources.ProductResource;
 import com.fahdisa.scs.resources.UserResource;
 import com.mongodb.client.MongoClient;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.chained.ChainedAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+
+import java.util.Arrays;
 
 public class ShoppingCartServiceApplication extends Application<ShoppingCartServiceConfiguration> {
 
@@ -69,6 +81,27 @@ public class ShoppingCartServiceApplication extends Application<ShoppingCartServ
         environment.jersey().register(userResource);
         environment.jersey().register(productResource);
         environment.jersey().register(orderResource);
+
+        environment.jersey().register(RolesAllowedDynamicFeature.class);
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserPrinciple.class));
+        environment.jersey().register(
+                new AuthDynamicFeature(
+                        new ChainedAuthFilter<>(
+                                Arrays.asList(
+                                        new JWTCredentialAuthFilter.Builder<UserPrinciple>()
+                                                .setAuthenticator(
+                                                        new JWTAuthenticator(userService))
+                                                .setPrefix("Bearer")
+                                                .setAuthorizer(new UserAuthorizer())
+                                                .buildAuthFilter(),
+                                        new JWTCredentialAuthFilter.Builder<UserPrinciple>()
+                                                .setAuthenticator(new JWTDefaultAuthenticator())
+                                                .setAuthorizer(new UserAuthorizer())
+                                                .setRealm("SUPER SECRET STUFF")
+                                                .buildAuthFilter())
+                        )
+                )
+        );
 
         //Register HealthCheck
         environment.healthChecks().register("database",

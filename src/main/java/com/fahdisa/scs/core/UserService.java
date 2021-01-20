@@ -7,8 +7,16 @@ import com.fahdisa.scs.api.Login;
 import com.fahdisa.scs.api.Status;
 import com.fahdisa.scs.db.user.User;
 import com.fahdisa.scs.db.user.UserStore;
+import com.fahdisa.scs.db.util.Token;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +36,7 @@ public class UserService {
 
         Optional<User> optional = userStore.findByEmail(user.getEmail());
 
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             return new ApiResponse.Builder<User>()
                     .status(Status.FAILED)
                     .description("User already exist")
@@ -60,10 +68,20 @@ public class UserService {
                     .description("Invalid authentication")
                     .build();
         }
+
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+        byte[] apiKeySecretBytes = Base64.getDecoder().decode(Token.SECRET_KEY);
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+        JwtBuilder builder = Jwts.builder().setIssuedAt(now).setSubject(user.getId().toString())
+                .signWith(signatureAlgorithm, signingKey);
+        String token = builder.compact();
+
         return new ApiResponse.Builder<User>()
                 .status(Status.SUCCESS)
                 .description("Success")
-                .data(user)
+                .data(token)
                 .build();
     }
 
@@ -80,6 +98,10 @@ public class UserService {
                 .description("Success")
                 .data(optional.get())
                 .build();
+    }
+
+    public Optional<User> findById(String id) {
+        return userStore.findById(id);
     }
 
     public ApiResponse<User> updatePassword(String id, ChangePassword changePassword) {

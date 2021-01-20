@@ -6,6 +6,8 @@ import com.fahdisa.scs.core.UserService;
 import com.fahdisa.scs.db.user.User;
 import io.swagger.annotations.Api;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -33,11 +35,13 @@ public class UserResource {
         this.userService = userService;
     }
 
+    @PermitAll
     @POST
     public Response create(@Valid User user) {
         return Response.ok(userService.create(user)).build();
     }
 
+    @PermitAll
     @Path("login")
     @POST
     public Response login(@Valid Login login) {
@@ -56,6 +60,7 @@ public class UserResource {
         return Response.ok(userService.updatePassword(null, changePassword)).build();
     }
 
+    @RolesAllowed("{ALL}")
     @Path("find")
     @GET
     public Response findAll(@QueryParam("page") @DefaultValue("0") Integer page,

@@ -74,7 +74,7 @@ public class OrderService {
     }
 
     private OrderItem createOrderItem(OrderItemModel orderItemModel) {
-        String productId = orderItemModel.getProductId();
+        String productId = orderItemModel.getId();
         Optional<Product> optional = productService.find(productId);
         if (!optional.isPresent()) {
             return null;

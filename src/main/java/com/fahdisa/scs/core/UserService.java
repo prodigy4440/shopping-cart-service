@@ -10,6 +10,8 @@ import com.fahdisa.scs.db.user.UserStore;
 import io.jsonwebtoken.Jwts;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,9 +66,13 @@ public class UserService {
                     .build();
         }
 
+        Date tokenExpiration = Date.from(Instant.now().plusSeconds(60 * 30));
         String jwt = Jwts.builder()
                 .setSubject(user.getId().toString())
                 .signWith(keyService.getKey())
+                .setExpiration(tokenExpiration)
+                .setIssuedAt(new Date())
+                .setIssuer("shopper-cart-service")
                 .claim("role", user.getRole())
                 .compact();
 

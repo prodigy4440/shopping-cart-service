@@ -7,6 +7,7 @@ import com.fahdisa.scs.core.OrderService;
 import com.fahdisa.scs.db.order.Order;
 import io.swagger.annotations.Api;
 
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -37,6 +38,7 @@ public class OrderResource {
         this.orderService = orderService;
     }
 
+    @PermitAll
     @Path("create")
     @POST
     public Response create(@Valid OrderRequest orderRequest) {
@@ -60,6 +62,7 @@ public class OrderResource {
         ).build();
     }
 
+    @PermitAll
     @Path("{orderId}")
     @GET
     public Response find(@PathParam("orderId") String orderId) {
@@ -83,6 +86,7 @@ public class OrderResource {
         ).build();
     }
 
+    @PermitAll
     @Path("update/{orderId}")
     @PUT
     public Response updatesStatus(@PathParam("orderId") String orderId,
@@ -108,6 +112,7 @@ public class OrderResource {
         ).build();
     }
 
+    @PermitAll
     @Path("user/{userId}")
     @GET
     public Response find(@PathParam("userId") String userId,

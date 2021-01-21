@@ -6,6 +6,7 @@ import com.fahdisa.scs.core.ProductService;
 import com.fahdisa.scs.db.product.Product;
 import io.swagger.annotations.Api;
 
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -34,6 +35,7 @@ public class ProductResource {
         this.productService = productService;
     }
 
+    @PermitAll
     @POST
     public Response create(@Valid Product product) {
         Product created = productService.create(product);
@@ -46,6 +48,7 @@ public class ProductResource {
         ).build();
     }
 
+    @PermitAll
     @Path("/{id}")
     @GET
     public Response find(@PathParam("id") String id) {
@@ -68,6 +71,7 @@ public class ProductResource {
         ).build();
     }
 
+    @PermitAll
     @Path("search")
     @GET
     public Response search(@QueryParam("name") String name,
@@ -82,6 +86,7 @@ public class ProductResource {
         return Response.ok(apiResponse).build();
     }
 
+    @PermitAll
     @Path("/find")
     @GET
     public Response findAll(@QueryParam("page") @DefaultValue("0") Integer page,

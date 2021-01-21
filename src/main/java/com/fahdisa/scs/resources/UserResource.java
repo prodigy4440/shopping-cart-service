@@ -35,13 +35,11 @@ public class UserResource {
         this.userService = userService;
     }
 
-//    @PermitAll
     @POST
     public Response create(@Valid User user) {
         return Response.ok(userService.create(user)).build();
     }
 
-//    @PermitAll
     @Path("login")
     @POST
     public Response login(@Valid Login login) {
@@ -55,13 +53,14 @@ public class UserResource {
         return Response.ok(userService.find(id)).build();
     }
 
+    @PermitAll
     @Path("/update/password")
     @PUT
     public Response updatePassword(@Valid ChangePassword changePassword) {
         return Response.ok(userService.updatePassword(null, changePassword)).build();
     }
 
-    @RolesAllowed("{ALL}")
+    @PermitAll
     @Path("find")
     @GET
     public Response findAll(@QueryParam("page") @DefaultValue("0") Integer page,

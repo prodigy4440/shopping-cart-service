@@ -35,19 +35,20 @@ public class UserResource {
         this.userService = userService;
     }
 
-    @PermitAll
+//    @PermitAll
     @POST
     public Response create(@Valid User user) {
         return Response.ok(userService.create(user)).build();
     }
 
-    @PermitAll
+//    @PermitAll
     @Path("login")
     @POST
     public Response login(@Valid Login login) {
         return Response.ok(userService.login(login)).build();
     }
 
+    @PermitAll
     @Path("/{id}")
     @GET
     public Response find(@PathParam("id") String id) {

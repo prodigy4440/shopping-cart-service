@@ -1,12 +1,12 @@
 package com.fahdisa.scs;
 
-import com.fahdisa.scs.auth.JWTAuthenticator;
-import com.fahdisa.scs.auth.JWTCredentialAuthFilter;
-import com.fahdisa.scs.auth.JWTDefaultAuthenticator;
-import com.fahdisa.scs.auth.JwtCredential;
+import com.fahdisa.scs.auth.UserAuthenticator;
+import com.fahdisa.scs.auth.UserCredentialAuthFilter;
+import com.fahdisa.scs.auth.UserDefaultAuthenticator;
 import com.fahdisa.scs.auth.UserAuthorizer;
 import com.fahdisa.scs.auth.UserPrinciple;
 import com.fahdisa.scs.config.MongoClientFactory;
+import com.fahdisa.scs.core.KeyService;
 import com.fahdisa.scs.core.OrderService;
 import com.fahdisa.scs.core.ProductService;
 import com.fahdisa.scs.core.UserService;
@@ -67,7 +67,8 @@ public class ShoppingCartServiceApplication extends Application<ShoppingCartServ
         MongoClient mongoClient = mongoFactory.build(environment);
 
         //Create Service
-        UserService userService = new UserService(new UserStore(mongoFactory.getName(), mongoClient));
+        KeyService keyService = new KeyService();
+        UserService userService = new UserService(new UserStore(mongoFactory.getName(), mongoClient), keyService);
         ProductService productService = new ProductService(new ProductStore(mongoFactory.getName(), mongoClient));
         OrderService orderService = new OrderService(new OrderStore(mongoFactory.getName(), mongoClient), productService);
 
@@ -88,14 +89,14 @@ public class ShoppingCartServiceApplication extends Application<ShoppingCartServ
                 new AuthDynamicFeature(
                         new ChainedAuthFilter<>(
                                 Arrays.asList(
-                                        new JWTCredentialAuthFilter.Builder<UserPrinciple>()
+                                        new UserCredentialAuthFilter.Builder<UserPrinciple>()
                                                 .setAuthenticator(
-                                                        new JWTAuthenticator(userService))
+                                                        new UserAuthenticator(userService, keyService))
                                                 .setPrefix("Bearer")
                                                 .setAuthorizer(new UserAuthorizer())
                                                 .buildAuthFilter(),
-                                        new JWTCredentialAuthFilter.Builder<UserPrinciple>()
-                                                .setAuthenticator(new JWTDefaultAuthenticator())
+                                        new UserCredentialAuthFilter.Builder<UserPrinciple>()
+                                                .setAuthenticator(new UserDefaultAuthenticator())
                                                 .setAuthorizer(new UserAuthorizer())
                                                 .setRealm("SUPER SECRET STUFF")
                                                 .buildAuthFilter())

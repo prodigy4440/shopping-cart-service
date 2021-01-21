@@ -7,25 +7,20 @@ import com.fahdisa.scs.api.Login;
 import com.fahdisa.scs.api.Status;
 import com.fahdisa.scs.db.user.User;
 import com.fahdisa.scs.db.user.UserStore;
-import com.fahdisa.scs.db.util.Token;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public class UserService {
 
     private UserStore userStore;
+    private KeyService keyService;
 
-    public UserService(UserStore userStore) {
+    public UserService(UserStore userStore, KeyService keyService) {
         this.userStore = userStore;
+        this.keyService = keyService;
     }
 
     public ApiResponse create(User user) {
@@ -69,19 +64,16 @@ public class UserService {
                     .build();
         }
 
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
-        byte[] apiKeySecretBytes = Base64.getDecoder().decode(Token.SECRET_KEY);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
-        JwtBuilder builder = Jwts.builder().setIssuedAt(now).setSubject(user.getId().toString())
-                .signWith(signatureAlgorithm, signingKey);
-        String token = builder.compact();
+        String jwt = Jwts.builder()
+                .setSubject(user.getId().toString())
+                .signWith(keyService.getKey())
+                .claim("role", user.getRole())
+                .compact();
 
         return new ApiResponse.Builder<User>()
                 .status(Status.SUCCESS)
                 .description("Success")
-                .data(token)
+                .data(jwt)
                 .build();
     }
 

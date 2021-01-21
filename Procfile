@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar target/shopping-order-service-1.0-SNAPSHOT.jar server config.yml
+web: java $JAVA_OPTS -Ddw.server.server.applicationConnectors[0].port=$PORT -jar target/shopping-order-service-1.0-SNAPSHOT.jar server config.yml

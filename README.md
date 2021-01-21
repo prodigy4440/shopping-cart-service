@@ -1,6 +1,6 @@
-# ShoppingCartService
+# Sello-Backend
 
-How to start the ShoppingCartService application
+How to start the Sello-Backend application
 ---
 
 1. Run `mvn clean install` to build your application
@@ -13,10 +13,12 @@ Health Check
 To see your applications health enter url `http://localhost:8081/healthcheck`
 
 
-Run with Docker Compose
+Running full application
 ---
 
-docker-compose -d
+Start With:: docker-compose up -d
+
+Stop With::  docker-compose down --remove-orphans
 
 Swagger Documentation
 ---

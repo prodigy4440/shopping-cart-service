@@ -1,16 +1,24 @@
 version: "3.8"
 services:
-  shopping-cart-service:
-    build: .
+  sello-frontend:
+    image: prodigy4440/sello-frontend:v1
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: "http://sello-backend:8080"
+    depends_on:
+      - sello-backend
+  sello-backend:
+    image: prodigy4440/sello-backend:v1
     ports:
       - "8080:8080"
     environment:
       PORT: "8080"
-      DATABASE_URL: "mongodb://mongodb:27017/shopping_cart_db?retryWrites=true&w=majority"
-      DATABASE_NAME: "shopping_cart_db"
+      DATABASE_URL: "mongodb://mongodb-service:27017/sello_db?retryWrites=true&w=majority"
+      DATABASE_NAME: "sello_db"
     depends_on:
-      - mongodb
-  mongodb:
+      - mongodb-service
+  mongodb-service:
     image: mongo:latest
     ports:
       - 27017

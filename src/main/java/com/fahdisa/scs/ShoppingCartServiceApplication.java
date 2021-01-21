@@ -17,6 +17,7 @@ import com.fahdisa.scs.health.DatabaseHealthCheck;
 import com.fahdisa.scs.resources.OrderResource;
 import com.fahdisa.scs.resources.ProductResource;
 import com.fahdisa.scs.resources.UserResource;
+import com.fahdisa.scs.resources.util.Cors;
 import com.mongodb.client.MongoClient;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -28,9 +29,13 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 public class ShoppingCartServiceApplication extends Application<ShoppingCartServiceConfiguration> {
 
@@ -107,6 +112,9 @@ public class ShoppingCartServiceApplication extends Application<ShoppingCartServ
         //Register HealthCheck
         environment.healthChecks().register("database",
                 new DatabaseHealthCheck(mongoFactory.getName(), mongoClient));
+
+        //Enable cors
+        Cors.insecure(environment);
     }
 
 }

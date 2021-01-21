@@ -1,9 +1,12 @@
 package com.fahdisa.scs.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderItemModel {
 
     @NotEmpty(message = "Product id is required")

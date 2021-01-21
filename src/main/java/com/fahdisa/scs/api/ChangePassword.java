@@ -1,8 +1,11 @@
 package com.fahdisa.scs.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChangePassword {
 
     @NotEmpty(message = "Current password is required")

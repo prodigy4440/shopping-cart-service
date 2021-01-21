@@ -1,9 +1,12 @@
 package com.fahdisa.scs.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderRequest {
 
     @NotEmpty(message = "RequestId is required")
